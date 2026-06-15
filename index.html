@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Артем Коваль | Персональний тренер</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg-secondary: #0f0f0f;
+            --surface: #141414;
+            --surface-hover: #1a1a1a;
+            --border: #222222;
+            --text: #e8e8e8;
+            --text-secondary: #999999;
+            --accent: #d4773c;
+            --accent-glow: rgba(212, 119, 60, 0.25);
+            --accent-dark: #b85f2a;
+            --green: #4a9e7b;
+            --radius: 16px;
+            --radius-lg: 24px;
+            --transition: 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+            --shadow: 0 4px 24px rgba(0,0,0,0.4);
+            --shadow-lg: 0 12px 48px rgba(0,0,0,0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+            background: var(--bg);
+        }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Анімована сітка на фоні */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Анімації появи */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-d1 { transition-delay: 0.1s; }
+        .reveal-d2 { transition-delay: 0.2s; }
+        .reveal-d3 { transition-delay: 0.3s; }
+        .reveal-d4 { transition-delay: 0.4s; }
+
+        /* Glow accent */
+        .glow-text {
+            background: linear-gradient(135deg, #e08b50 0%, #d4773c 40%, #f0a870 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Навігація */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10,10,10,0.78);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 2.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        nav.scrolled {
+            background: rgba(10,10,10,0.92);
+            box-shadow: 0 2px 24px rgba(0,0,0,0.5);
+        }
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
+        .logo span {
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            position: relative;
+            letter-spacing: 0.3px;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+        }
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+        .lang-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.55rem 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            letter-spacing: 0.3px;
+        }
+        .lang-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.7rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* Секції */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.6px;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 3.5rem;
+            font-size: 1.1rem;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Hero */
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            min-height: 90vh;
+            padding-top: 7rem;
+        }
+        .hero-content {
+            flex: 1.1;
+        }
+        .hero-content .badge {
+            display: inline-block;
+            background: rgba(212,119,60,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(212,119,60,0.25);
+            padding: 0.5rem 1.3rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+        .hero-content h1 {
+            font-size: 3.3rem;
+            font-weight: 800;
+            line-height: 1.16;
+            margin-bottom: 1.3rem;
+            letter-spacing: -0.9px;
+        }
+        .hero-content p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.2rem;
+            max-width: 520px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 1rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 650;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.35s;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            box-shadow: 0 6px 24px var(--accent-glow);
+        }
+        .btn-primary:hover {
+            background: #e08b50;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(212,119,60,0.45);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 1.5px solid var(--border);
+            padding: 1rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.35s;
+            letter-spacing: 0.3px;
+            display: inline-block;
+        }
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 22px var(--accent-glow);
+        }
+        .hero-image {
+            flex: 0.9;
+            position: relative;
+        }
+        /* ═══════════════════════════════════════════ */
+        /* ФОТО 1: Головне фото Артема (кругле)      */
+        /* Розмір: ~520x520 px                       */
+        /* ═══════════════════════════════════════════ */
+        .hero-image img {
+            width: 100%;
+            max-width: 470px;
+            border-radius: 50%;
+            object-fit: cover;
+            aspect-ratio: 1/1;
+            box-shadow: 0 0 0 2px var(--border), 0 24px 60px rgba(0,0,0,0.6);
+            border: 4px solid var(--surface);
+            animation: float 6s ease-in-out infinite;
+            filter: brightness(0.95);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-14px); }
+        }
+        .hero-image::after {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: -24px;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px dashed rgba(212,119,60,0.3);
+            animation: rotate 30s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Блок результатів */
+        #why {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            margin: 2rem auto;
+            padding: 5rem 2rem;
+            max-width: 1150px;
+            border: 1px solid var(--border);
+        }
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2.8rem 0 1.5rem;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e08b50, #d4773c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.4rem;
+            letter-spacing: 0.3px;
+        }
+
+        /* Картки послуг */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 1.8rem;
+        }
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: #333;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+        }
+        /* ═══════════════════════════════════════════ */
+        /* ФОТО 2-4: Картинки послуг 400x220 px      */
+        /* ═══════════════════════════════════════════ */
+        .card-img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 1.6rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-body h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.2px;
+        }
+        .card-body .for-who {
+            font-weight: 650;
+            color: var(--accent);
+            font-size: 0.88rem;
+            margin-bottom: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card-body p {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+            flex: 1;
+        }
+
+        /* Філософія */
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1.8rem;
+        }
+        .phil-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 2.4rem 2rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .phil-card:hover {
+            transform: translateY(-6px);
+            border-color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .phil-icon {
+            font-size: 2.8rem;
+            margin-bottom: 1.1rem;
+        }
+        .phil-card h3 {
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+        .phil-card p {
+            color: var(--text-secondary);
+            font-size: 0.93rem;
+        }
+
+        /* Контакти */
+        .contact-wrapper {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        .contact-info {
+            flex: 1;
+        }
+        .contact-info .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        .contact-info .info-icon {
+            font-size: 1.4rem;
+        }
+        .contact-form {
+            flex: 1;
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .contact-form input,
+        .contact-form select {
+            width: 100%;
+            padding: 0.95rem 1.3rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: var(--bg-secondary);
+            color: var(--text);
+            transition: all 0.3s;
+            appearance: none;
+        }
+        .contact-form select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.2rem center;
+            cursor: pointer;
+        }
+        .contact-form input:focus,
+        .contact-form select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .contact-form .btn-primary {
+            width: 100%;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--surface);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s;
+            pointer-events: none;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding-top: 5.5rem;
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            .hero-image img {
+                max-width: 260px;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--bg);
+                padding: 1.5rem;
+                border-bottom: 1px solid var(--border);
+                box-shadow: var(--shadow);
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .section-title {
+                font-size: 1.9rem;
+            }
+            #why {
+                padding: 3rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- НАВІГАЦІЯ -->
+    <nav id="navbar">
+        <div class="logo">Артем <span>Коваль</span></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#hero" class="active" data-lang-uk="Головна" data-lang-en="Home">Головна</a></li>
+            <li><a href="#why" data-lang-uk="Результати" data-lang-en="Results">Результати</a></li>
+            <li><a href="#services" data-lang-uk="Послуги" data-lang-en="Services">Послуги</a></li>
+            <li><a href="#philosophy" data-lang-uk="Підхід" data-lang-en="Approach">Підхід</a></li>
+            <li><a href="#contact" data-lang-uk="Контакти" data-lang-en="Contact">Контакти</a></li>
+        </ul>
+        <button class="lang-btn" id="langToggle" aria-label="Switch language">🇬🇧 EN</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+    </nav>
+
+    <!-- 1. HERO -->
+    <section class="hero reveal" id="hero">
+        <div class="hero-content">
+            <span class="badge" data-lang-uk="Артем Коваль | Сертифікований персональний тренер & експерт із нутриціології"
+                  data-lang-en="Artem Koval | Certified Personal Trainer & Nutrition Expert">
+                Артем Коваль | Сертифікований персональний тренер & експерт із нутриціології
+            </span>
+            <h1 data-lang-uk="Створи тіло, в якому ти почуватимешся впевнено та енергійно щодня"
+                data-lang-en="Build a body that makes you feel confident and energized every single day">
+                Створи тіло, в якому ти почуватимешся впевнено та енергійно щодня
+            </h1>
+            <p data-lang-uk="Індивідуальний фітнес-супровід до результату без жорстких дієт, зривів та виснажливих тренувань. Тільки науковий підхід, безпека для здоров'я та залізна мотивація."
+               data-lang-en="Personalized fitness coaching driven by results—without extreme diets, burnouts, or exhausting routines. Just a science-based approach, safety, and unwavering motivation.">
+                Індивідуальний фітнес-супровід до результату без жорстких дієт, зривів та виснажливих тренувань. Тільки науковий підхід, безпека для здоров'я та залізна мотивація.
+            </p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn-primary" data-lang-uk="Забронювати безкоштовну консультацію" data-lang-en="Book Your Free Consultation">Забронювати безкоштовну консультацію</a>
+                <a href="#services" class="btn-outline" data-lang-uk="Мої програми" data-lang-en="My Programs">Мої програми</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- ФОТО 1: Головне фото Артема 520x520 px    -->
+            <!-- ═══════════════════════════════════════════ -->
+            <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=520&h=520&fit=crop&crop=face"
+                 alt="Артем Коваль - персональний тренер" loading="eager">
+        </div>
+    </section>
+
+    <!-- 2. БЛОК РЕЗУЛЬТАТІВ -->
+    <section id="why">
+        <h2 class="section-title reveal" data-lang-uk="Чому твій результат гарантований?"
+            data-lang-en="Why Your Results Are Guaranteed">
+            Чому твій результат гарантований?
+        </h2>
+        <p class="section-subtitle reveal reveal-d1" data-lang-uk="Фітнес — це не про самокатування. Це про покращення якості твого життя. Я допомагаю повністю трансформувати твої звички, повернути високий рівень енергії та побудувати здорове, функціональне тіло на все життя."
+           data-lang-en="Fitness is not about self-punishment. It is about upgrading the quality of your life. I guide you to completely upgrade your habits, reclaim high energy levels, and build a healthy, functional body for life.">
+            Фітнес — це не про самокатування. Це про покращення якості твого життя. Я допомагаю повністю трансформувати твої звички, повернути високий рівень енергії та побудувати здорове, функціональне тіло на все життя.
+        </p>
+        <div class="stats-grid reveal reveal-d2">
+            <div class="stat-item">
+                <div class="stat-number">6+</div>
+                <div class="stat-label" data-lang-uk="років успішної практики" data-lang-en="years of coaching">років успішної практики</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">150+</div>
+                <div class="stat-label" data-lang-uk="клієнтів досягли цілей" data-lang-en="clients achieved goals">клієнтів досягли цілей</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">NASM</div>
+                <div class="stat-label" data-lang-uk="міжнародна сертифікація" data-lang-en="international certification">міжнародна сертифікація</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. ПОСЛУГИ -->
+    <section id="services">
+        <h2 class="section-title reveal" data-lang-uk="Обери свій формат трансформації"
+            data-lang-en="Choose Your Transformation Format">
+            Обери свій формат трансформації
+        </h2>
+        <p class="section-subtitle reveal reveal-d1" data-lang-uk="Готові рішення під твій ритм життя та конкретну ціль"
+           data-lang-en="Tailored solutions for your lifestyle and specific goal">
+            Готові рішення під твій ритм життя та конкретну ціль
+        </p>
+        <div class="cards-grid">
+            <!-- Картка 1 -->
+            <div class="card reveal reveal-d1">
+                <div class="card-img">
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- ФОТО 2: Тренування в залі 400x210 px       -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=210&fit=crop" alt="Персональний тренінг" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h3 data-lang-uk="Персональний офлайн-менторшип"
+                        data-lang-en="1-on-1 Premium Training">Персональний офлайн-менторшип</h3>
+                    <div class="for-who" data-lang-uk="В залі" data-lang-en="In-Gym">В залі</div>
+                    <p data-lang-uk="Максимальний контроль техніки та 100% фокус тренера. Індивідуальна програма, адаптація навантаження, постійний моніторинг прогресу в преміум-залі."
+                       data-lang-en="Maximum technique control and 100% trainer focus. Custom program, load adaptation, and continuous progress tracking in a premium gym.">
+                        Максимальний контроль техніки та 100% фокус тренера. Індивідуальна програма, адаптація навантаження, постійний моніторинг прогресу в преміум-залі.
+                    </p>
+                </div>
+            </div>
+            <!-- Картка 2 -->
+            <div class="card reveal reveal-d2">
+                <div class="card-img">
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- ФОТО 3: Онлайн тренування 400x210 px       -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=400&h=210&fit=crop" alt="Онлайн коучинг" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h3 data-lang-uk="Повне онлайн-ведення"
+                        data-lang-en="Elite Online Coaching">Повне онлайн-ведення</h3>
+                    <div class="for-who" data-lang-uk="Дистанційно" data-lang-en="Remote">Дистанційно</div>
+                    <p data-lang-uk="Для зайнятих людей. План тренувань у мобільному додатку, щотижневі чек-іни, відеорозбір техніки, підтримка 24/7 та контроль результатів з будь-якої точки світу."
+                       data-lang-en="For busy individuals. Workout plans in a mobile app, weekly check-ins, video form analysis, 24/7 support, and goal tracking from anywhere.">
+                        Для зайнятих людей. План тренувань у мобільному додатку, щотижневі чек-іни, відеорозбір техніки, підтримка 24/7 та контроль результатів з будь-якої точки світу.
+                    </p>
+                </div>
+            </div>
+            <!-- Картка 3 -->
+            <div class="card reveal reveal-d3">
+                <div class="card-img">
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- ФОТО 4: Нутриціологія / їжа 400x210 px     -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=210&fit=crop" alt="Нутриціологія" loading="lazy">
+                </div>
+                <div class="card-body">
+                    <h3 data-lang-uk="Розумна нутриціологія"
+                        data-lang-en="Smart Nutrition Planning">Розумна нутриціологія</h3>
+                    <div class="for-who" data-lang-uk="Харчування" data-lang-en="Nutrition">Харчування</div>
+                    <p data-lang-uk="Розбір раціону без голодувань та відмов від улюбленої їжі. Індивідуальна стратегія, корекція харчової поведінки, адаптовані смачні рецепти."
+                       data-lang-en="Diet analysis without starvation or cutting favorite foods. Custom strategy, eating behavior correction, and delicious adapted recipes.">
+                        Розбір раціону без голодувань та відмов від улюбленої їжі. Індивідуальна стратегія, корекція харчової поведінки, адаптовані смачні рецепти.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. ФІЛОСОФІЯ -->
+    <section id="philosophy">
+        <h2 class="section-title reveal" data-lang-uk="Мій підхід: Фітнес без стресу"
+            data-lang-en="My Approach: Fitness Without Stress">
+            Мій підхід: Фітнес без стресу
+        </h2>
+        <p class="section-subtitle reveal reveal-d1" data-lang-uk="Прибираю головні страхи новачка"
+           data-lang-en="Eliminating the biggest beginner fears">
+            Прибираю головні страхи новачка
+        </p>
+        <div class="philosophy-grid">
+            <div class="phil-card reveal reveal-d1">
+                <div class="phil-icon">⚡</div>
+                <h3 data-lang-uk="Без виснаження" data-lang-en="No Exhaustion">Без виснаження</h3>
+                <p data-lang-uk="Тренуємося, щоб отримувати енергію для життя, а не залишати всі сили на килимку."
+                   data-lang-en="We train to fuel your life with energy, not to leave you drained on the gym floor.">
+                    Тренуємося, щоб отримувати енергію для життя, а не залишати всі сили на килимку.
+                </p>
+            </div>
+            <div class="phil-card reveal reveal-d2">
+                <div class="phil-icon">🍽️</div>
+                <h3 data-lang-uk="Гнучкий раціон" data-lang-en="Flexible Dieting">Гнучкий раціон</h3>
+                <p data-lang-uk="Не відмовляйся від сімейних вечерь чи кави. Вбудуємо фітнес у твоє життя."
+                   data-lang-en="No skipping family dinners or coffee. We fit fitness into your life, not the other way around.">
+                    Не відмовляйся від сімейних вечерь чи кави. Вбудуємо фітнес у твоє життя.
+                </p>
+            </div>
+            <div class="phil-card reveal reveal-d3">
+                <div class="phil-icon">🧬</div>
+                <h3 data-lang-uk="Тільки наука" data-lang-en="Pure Science">Тільки наука</h3>
+                <p data-lang-uk="Жодних «марафонів схуднення». Тільки доказові методи для довготривалого результату."
+                   data-lang-en="No weight-loss marathons. Only evidence-based methods for sustainable, long-term success.">
+                    Жодних «марафонів схуднення». Тільки доказові методи для довготривалого результату.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. КОНТАКТИ -->
+    <section id="contact">
+        <h2 class="section-title reveal" data-lang-uk="Зроби перший крок до тіла своєї мрії"
+            data-lang-en="Take the First Step Toward Your Dream Body">
+            Зроби перший крок до тіла своєї мрії
+        </h2>
+        <p class="section-subtitle reveal reveal-d1" data-lang-uk="Залиш заявку на безкоштовну 15-хвилинну діагностичну консультацію. Розберемо твою форму, визначимо помилки та складемо план дій."
+           data-lang-en="Sign up for a free 15-minute diagnostic consultation. We'll assess your fitness, pinpoint obstacles, and outline your roadmap.">
+            Залиш заявку на безкоштовну 15-хвилинну діагностичну консультацію. Розберемо твою форму, визначимо помилки та складемо план дій.
+        </p>
+        <div class="contact-wrapper">
+            <div class="contact-info reveal reveal-d1">
+                <div class="info-item">
+                    <span class="info-icon">📍</span>
+                    <span data-lang-uk="Фітнес-клуб «Titan Gym», вул. Хрещатик, 12, Київ / Онлайн по всьому світу"
+                          data-lang-en='"Titan Gym", 12 Khreshchatyk St, Kyiv / Online Worldwide'>
+                        Фітнес-клуб «Titan Gym», вул. Хрещатик, 12, Київ / Онлайн по всьому світу
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">📱</span>
+                    <span>Instagram: @artem_coach_fitness</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-icon">💬</span>
+                    <span>Telegram: @artem_fitness</span>
+                </div>
+            </div>
+            <div class="contact-form reveal reveal-d2" id="bookingForm">
+                <input type="text" id="clientName" data-lang-uk-placeholder="Твоє ім'я"
+                       data-lang-en-placeholder="Your Name" placeholder="Твоє ім'я" required>
+                <input type="text" id="clientPhone" data-lang-uk-placeholder="Номер телефону / Telegram нік"
+                       data-lang-en-placeholder="Phone Number / Telegram Handle" placeholder="Номер телефону / Telegram нік" required>
+                <select id="clientGoal">
+                    <option value="" disabled selected data-lang-uk="Твоя головна мета" data-lang-en="Your Main Goal">Твоя головна мета</option>
+                    <option value="weight-loss" data-lang-uk="Схуднення" data-lang-en="Weight Loss">Схуднення</option>
+                    <option value="muscle-gain" data-lang-uk="Набір маси" data-lang-en="Muscle Gain">Набір маси</option>
+                    <option value="health-tone" data-lang-uk="Тонус та здоров'я" data-lang-en="Health & Tone">Тонус та здоров'я</option>
+                </select>
+                <button type="submit" class="btn-primary" id="submitForm"
+                        data-lang-uk="Надіслати заявку та отримати план"
+                        data-lang-en="Submit Request & Get My Roadmap">
+                    Надіслати заявку та отримати план
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p data-lang-uk="© 2026 Артем Коваль. Усі права захищені. Твій усвідомлений шлях до ідеальної форми."
+           data-lang-en="© 2026 Artem Koval. All rights reserved. Your conscious path to peak shape.">
+            © 2026 Артем Коваль. Усі права захищені. Твій усвідомлений шлях до ідеальної форми.
+        </p>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ═══════════════════════════════════════
+        // ПЕРЕМИКАННЯ МОВ
+        // ═══════════════════════════════════════
+        let currentLang = 'uk';
+        const langToggle = document.getElementById('langToggle');
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            document.querySelectorAll('[data-lang-uk]').forEach(el => {
+                if (el.tagName === 'INPUT' || el.tagName === 'SELECT') return;
+                const text = lang === 'uk' ? el.getAttribute('data-lang-uk') : el.getAttribute('data-lang-en');
+                if (text !== null) el.textContent = text;
+            });
+
+            document.querySelectorAll('[data-lang-uk-placeholder]').forEach(input => {
+                const placeholder = lang === 'uk'
+                    ? input.getAttribute('data-lang-uk-placeholder')
+                    : input.getAttribute('data-lang-en-placeholder');
+                if (placeholder !== null) input.placeholder = placeholder;
+            });
+
+            // Оновлюємо <option> в select
+            const goalSelect = document.getElementById('clientGoal');
+            if (goalSelect) {
+                const options = goalSelect.querySelectorAll('option');
+                options.forEach(opt => {
+                    const txt = lang === 'uk' ? opt.getAttribute('data-lang-uk') : opt.getAttribute('data-lang-en');
+                    if (txt) opt.textContent = txt;
+                });
+            }
+
+            langToggle.textContent = lang === 'uk' ? '🇬🇧 EN' : '🇺🇦 UA';
+            localStorage.setItem('lang', lang);
+        }
+
+        langToggle.addEventListener('click', () => {
+            switchLanguage(currentLang === 'uk' ? 'en' : 'uk');
+        });
+
+        const savedLang = localStorage.getItem('lang');
+        if (savedLang && (savedLang === 'uk' || savedLang === 'en')) {
+            switchLanguage(savedLang);
+        }
+
+        // ═══════════════════════════════════════
+        // АНІМАЦІЯ ПРИ СКРОЛІ
+        // ═══════════════════════════════════════
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+        revealElements.forEach(el => observer.observe(el));
+
+        // ═══════════════════════════════════════
+        // ФОРМА ЗВОРОТНЬОГО ЗВ'ЯЗКУ
+        // ═══════════════════════════════════════
+        const submitBtn = document.getElementById('submitForm');
+        const nameInput = document.getElementById('clientName');
+        const phoneInput = document.getElementById('clientPhone');
+        const goalSelect = document.getElementById('clientGoal');
+        const toast = document.getElementById('toast');
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3800);
+        }
+
+        submitBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const goal = goalSelect.value;
+
+            if (!name || !phone || !goal) {
+                const errMsg = currentLang === 'uk'
+                    ? '⚠️ Будь ласка, заповніть усі поля'
+                    : '⚠️ Please fill in all fields';
+                showToast(errMsg);
+                return;
+            }
+
+            // ─── ВІДПРАВКА НА СЕРВЕР (заглушка) ───
+            console.log('📩 Нова заявка:', { name, phone, goal, lang: currentLang });
+            // fetch('/api/booking', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ name, phone, goal, lang: currentLang })
+            // });
+
+            const successMsg = currentLang === 'uk'
+                ? '✅ Дякую! Я зв\'яжусь із тобою найближчим часом 💪'
+                : '✅ Thank you! I\'ll contact you shortly 💪';
+            showToast(successMsg);
+
+            nameInput.value = '';
+            phoneInput.value = '';
+            goalSelect.selectedIndex = 0;
+        });
+
+        // ═══════════════════════════════════════
+        // НАВІГАЦІЯ: тінь при скролі
+        // ═══════════════════════════════════════
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // ═══════════════════════════════════════
+        // МОБІЛЬНЕ МЕНЮ
+        // ═══════════════════════════════════════
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        mobileMenuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => navLinks.classList.remove('open'));
+        });
+
+        // ═══════════════════════════════════════
+        // АКТИВНИЙ ПУНКТ МЕНЮ
+        // ═══════════════════════════════════════
+        const sections = document.querySelectorAll('section[id]');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                if (window.scrollY >= section.offsetTop - 140) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.querySelectorAll('a').forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
